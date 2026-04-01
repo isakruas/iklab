@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Query engine — controls budget, turn limits, and transcript compaction."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 

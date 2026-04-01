@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """IKLab CLI — orchestrator that delegates to skills."""
+
+from __future__ import annotations
 
 import argparse
 import asyncio

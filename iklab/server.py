@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """MCP Server — imports all tools and runs the server."""
+
+from __future__ import annotations
 
 import importlib
 import importlib.util

@@ -1,6 +1,5 @@
 import json
 
-
 from iklab.config import get_config
 from iklab.prompt_builder import build_system_prompt
 from iklab.skill_registry import build_skill_registry
@@ -13,7 +12,14 @@ def test_skill_discovery_and_prompt(tmp_path, monkeypatch):
     skills_dir.mkdir(parents=True)
     skill_file = skills_dir / "test_skill.md"
     skill_file.write_text(
-        "---\nname: TestSkill\ntriggers: [test]\nrecommended_tools: [ListDirectory]\ndescription: 'A test skill'\n---\n\nThis is the body of the test skill.\n"
+        "---\n"
+        "name: TestSkill\n"
+        "triggers: [test]\n"
+        "recommended_tools: [ListDirectory]\n"
+        "description: 'A test skill'\n"
+        "---\n"
+        "\n"
+        "This is the body of the test skill.\n"
     )
 
     # write settings pointing to project .iklab/skills

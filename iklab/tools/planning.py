@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 """Planning tools — use the model to analyze projects and create execution plans."""
 
+from __future__ import annotations
 
 from .. import ignore, model, sandbox
 from ..config import get_config
@@ -46,9 +45,7 @@ async def analyze_project(directory: str = ".") -> str:
         key_content += entry
 
     prompt = f"Project tree ({len(all_files)} files):\n{tree}\n\nFile contents:\n{key_content}"
-    return await model.ask(
-        AGENT_SYSTEM, f"Analyze this project completely:\n\n{prompt}"
-    )
+    return await model.ask(AGENT_SYSTEM, f"Analyze this project completely:\n\n{prompt}")
 
 
 @mcp.tool(name="PlanTask")
@@ -86,7 +83,8 @@ Project files:
 Key file contents:
 {context}
 
-Create a precise execution plan. Each step must use one of: ListDirectory, Read, Glob, Grep, Write, Bash, Think, WebSearch.
+Create a precise execution plan. Each step must use one of:
+ListDirectory, Read, Glob, Grep, Write, Bash, Think, WebSearch.
 Format:
 STEP N: [Tool] description
   args: ...

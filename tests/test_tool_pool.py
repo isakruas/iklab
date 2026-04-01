@@ -71,9 +71,7 @@ def test_names_sorted():
 
 def test_combined_filters():
     ctx = ToolPermissionContext.from_iterables(deny_names=["Read"])
-    pool = assemble_tool_pool(
-        _full_registry(), simple_mode=True, permission_context=ctx
-    )
+    pool = assemble_tool_pool(_full_registry(), simple_mode=True, permission_context=ctx)
     names = pool.names()
     assert "Read" not in names
     for n in names:

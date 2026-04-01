@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Prompt loader — reads .txt prompt files so they can be edited without touching code."""
+
+from __future__ import annotations
 
 import pathlib
 

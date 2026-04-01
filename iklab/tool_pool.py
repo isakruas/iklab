@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Tool pool — filters available tools by mode, phase, and permissions."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 

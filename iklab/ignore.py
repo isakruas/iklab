@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Ignore system: respects .gitignore, .dockerignore, .llmignore, etc."""
+
+from __future__ import annotations
 
 import fnmatch
 import os

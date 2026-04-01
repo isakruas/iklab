@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Model interface — all communication with the LLM goes through here."""
+
+from __future__ import annotations
 
 import httpx
 

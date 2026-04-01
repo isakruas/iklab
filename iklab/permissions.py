@@ -34,9 +34,7 @@ class ToolPermissionContext:
     def blocks(self, tool_name: str) -> bool:
         """Return True if *tool_name* is denied by this context."""
         lowered = tool_name.lower()
-        return lowered in self.deny_names or any(
-            lowered.startswith(prefix) for prefix in self.deny_prefixes
-        )
+        return lowered in self.deny_names or any(lowered.startswith(prefix) for prefix in self.deny_prefixes)
 
 
 class ToolApprover:

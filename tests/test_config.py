@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from iklab.config import load_config
 from iklab.models import AgentConfig
 

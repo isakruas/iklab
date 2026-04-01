@@ -7,9 +7,7 @@ from iklab.query_engine import QueryEngine, QueryEngineConfig
 from iklab.transcript import Transcript
 
 
-def _engine(
-    max_turns: int = 3, max_budget: int = 1000, compact_after: int = 5
-) -> QueryEngine:
+def _engine(max_turns: int = 3, max_budget: int = 1000, compact_after: int = 5) -> QueryEngine:
     return QueryEngine(
         config=QueryEngineConfig(
             max_turns=max_turns,

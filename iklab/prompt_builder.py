@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Dynamic system prompt composition from kernel base + runtime context."""
+
+from __future__ import annotations
 
 from .models import AgentConfig
 from .prompts import load
@@ -40,7 +40,15 @@ def build_system_prompt(
         # naive: include first 2 skills as guidance (could be improved by triggers)
         skill_snippets = []
         for s in list(skill_reg.skills)[:2]:
-            snippet = f"<SKILL:{s.name}>\nDescription: {s.description}\nRecommended tools: {', '.join(s.recommended_tools)}\n{(s.body.splitlines()[0] if s.body else '')}\n</SKILL:{s.name}>"
+            tools_list = ", ".join(s.recommended_tools)
+            first_line = s.body.splitlines()[0] if s.body else ""
+            snippet = (
+                f"<SKILL:{s.name}>\n"
+                f"Description: {s.description}\n"
+                f"Recommended tools: {tools_list}\n"
+                f"{first_line}\n"
+                f"</SKILL:{s.name}>"
+            )
             skill_snippets.append(snippet)
         if skill_snippets:
             sections.append("\n".join(skill_snippets))
@@ -50,13 +58,9 @@ def build_system_prompt(
 
     # 3. Active expert protocol
     if expert_protocol:
-        sections.append(
-            f"<ACTIVE_EXPERT_PROTOCOL>\n{expert_protocol}\n</ACTIVE_EXPERT_PROTOCOL>"
-        )
+        sections.append(f"<ACTIVE_EXPERT_PROTOCOL>\n{expert_protocol}\n</ACTIVE_EXPERT_PROTOCOL>")
     else:
-        sections.append(
-            "ACTIVE_EXPERT_PROTOCOL:\nNone. First, ORCHESTRATE a specialized protocol."
-        )
+        sections.append("ACTIVE_EXPERT_PROTOCOL:\nNone. First, ORCHESTRATE a specialized protocol.")
 
     # 4. History summary
     if history_summary:
@@ -64,9 +68,7 @@ def build_system_prompt(
 
     # 5. Configuration hints
     config_hints = (
-        f"Model: {cfg.model_name} | "
-        f"Max retries: {cfg.max_validation_retries} | "
-        f"Bash timeout: {cfg.max_bash_timeout}s"
+        f"Model: {cfg.model_name} | Max retries: {cfg.max_validation_retries} | Bash timeout: {cfg.max_bash_timeout}s"
     )
     sections.append(f"<CONFIG>\n{config_hints}\n</CONFIG>")
 

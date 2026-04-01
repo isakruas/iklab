@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Bootstrap graph — defines the ordered initialization stages of the agent."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 

@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Execution tools — write files, run commands, think, search web."""
+
+from __future__ import annotations
 
 import subprocess
 
@@ -59,7 +59,10 @@ def bash(command: str, timeout: int = 30) -> str:
 
 @mcp.tool(name="Think")
 async def think(task: str, context: str = "") -> str:
-    """Reason about HOW to solve a problem or make a technical decision. Do NOT use for questions about files or state."""
+    """Reason about HOW to solve a problem or make a technical decision.
+
+    Do NOT use for questions about files or state.
+    """
     prompt = f"Task:\n{task}"
     if context:
         prompt += f"\n\nContext:\n{context}"

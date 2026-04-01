@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Central tool registry — discovers and indexes all MCP tool metadata."""
+
+from __future__ import annotations
 
 import importlib
 import importlib.util
@@ -37,9 +37,7 @@ class ToolRegistry:
     def find(self, query: str, limit: int = 20) -> list[ToolMeta]:
         """Search tools by name or description substring (case-insensitive)."""
         q = query.lower()
-        matches = [
-            t for t in self.tools if q in t.name.lower() or q in t.description.lower()
-        ]
+        matches = [t for t in self.tools if q in t.name.lower() or q in t.description.lower()]
         return matches[:limit]
 
     def by_category(self, category: str) -> tuple[ToolMeta, ...]:

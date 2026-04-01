@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Context tools — read-only filesystem access for gathering information."""
+
+from __future__ import annotations
 
 import fnmatch
 
@@ -45,26 +45,19 @@ def glob_files(pattern: str, directory: str = ".") -> str:
     base = sandbox.resolve(directory)
     all_files = ignore.walk_project(base)
     matches = [
-        f
-        for f in all_files
-        if fnmatch.fnmatch(str(f.relative_to(base)), pattern)
-        or fnmatch.fnmatch(f.name, pattern)
+        f for f in all_files if fnmatch.fnmatch(str(f.relative_to(base)), pattern) or fnmatch.fnmatch(f.name, pattern)
     ]
     if not matches:
         return "No files found."
     cfg = get_config()
-    return "\n".join(
-        str(m.relative_to(sandbox.WORKDIR)) for m in matches[: cfg.max_search_results]
-    )
+    return "\n".join(str(m.relative_to(sandbox.WORKDIR)) for m in matches[: cfg.max_search_results])
 
 
 @mcp.tool(name="Grep")
 def grep_content(text: str, directory: str = ".", extensions: str = "") -> str:
     """Search for text inside files, respecting ignore rules. Extensions: '.py,.js'"""
     base = sandbox.resolve(directory)
-    exts = (
-        [e.strip() for e in extensions.split(",") if e.strip()] if extensions else None
-    )
+    exts = [e.strip() for e in extensions.split(",") if e.strip()] if extensions else None
     all_files = ignore.walk_project(base)
     results = []
     for fpath in all_files:
