@@ -5,6 +5,7 @@ from __future__ import annotations
 from .models import AgentConfig
 from .prompts import load
 from .tool_pool import ToolPool
+from .skill_registry import build_skill_registry
 
 
 def build_system_prompt(
@@ -32,6 +33,20 @@ def build_system_prompt(
     tool_section = tool_pool.as_markdown()
     if tool_section:
         sections.append(tool_section)
+
+    # 2.5 Skill guidance: include matched skills (small snippets)
+    try:
+        skill_reg = build_skill_registry()
+        # naive: include first 2 skills as guidance (could be improved by triggers)
+        skill_snippets = []
+        for s in list(skill_reg.skills)[:2]:
+            snippet = f"<SKILL:{s.name}>\nDescription: {s.description}\nRecommended tools: {', '.join(s.recommended_tools)}\n{(s.body.splitlines()[0] if s.body else '')}\n</SKILL:{s.name}>"
+            skill_snippets.append(snippet)
+        if skill_snippets:
+            sections.append("\n".join(skill_snippets))
+    except Exception:
+        # skill discovery is best-effort
+        pass
 
     # 3. Active expert protocol
     if expert_protocol:

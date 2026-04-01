@@ -32,6 +32,7 @@ def load_config() -> AgentConfig:
     # Read JSON settings file if present. Support multiple well-known locations.
     file_tool_paths: tuple[str, ...] = ()
     file_mcp_servers: tuple[str, ...] = ()
+    file_skills_paths: tuple[str, ...] = ()
 
     cfg_file = None
     if cfg_path_env:
@@ -61,12 +62,21 @@ def load_config() -> AgentConfig:
                 file_mcp_servers = tuple(str(x) for x in ms if isinstance(x, str) and x.strip())
             elif isinstance(ms, str):
                 file_mcp_servers = _parse_paths(ms)
+            sp = data.get("skills_paths") or data.get("skill_paths")
+            file_skills_paths: tuple[str, ...] = ()
+            if isinstance(sp, list):
+                file_skills_paths = tuple(str(x) for x in sp if isinstance(x, str) and x.strip())
+            elif isinstance(sp, str):
+                file_skills_paths = _parse_paths(sp)
         except Exception:
             # If config is malformed, ignore and fall back to env/defaults
             file_tool_paths = ()
             file_mcp_servers = ()
+            file_skills_paths = ()
 
     env_paths = _parse_paths(raw_tool_paths)
+    raw_skill_paths = os.environ.get("IKLAB_SKILL_PATHS", "")
+    env_skill_paths = _parse_paths(raw_skill_paths)
     # parse MCP servers from env
     env_mcp = _parse_paths(raw_mcp_servers)
 
@@ -98,6 +108,20 @@ def load_config() -> AgentConfig:
     else:
         combined_mcps = AgentConfig.mcp_servers
 
+    # Merge skills paths: file first, then env, then default
+    if file_skills_paths:
+        seen = set()
+        out = []
+        for p in list(file_skills_paths) + list(env_skill_paths):
+            if p not in seen:
+                seen.add(p)
+                out.append(p)
+        combined_skills = tuple(out)
+    elif env_skill_paths:
+        combined_skills = env_skill_paths
+    else:
+        combined_skills = AgentConfig.skills_paths
+
     return AgentConfig(
         model_url=os.environ.get(
             "IKLAB_MODEL_URL",
@@ -117,6 +141,7 @@ def load_config() -> AgentConfig:
         )),
         tools_paths=combined,
         mcp_servers=combined_mcps,
+        skills_paths=combined_skills,
     )
 
 

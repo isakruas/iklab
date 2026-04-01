@@ -21,6 +21,8 @@ class AgentConfig:
     # Optional list of external MCP server endpoints (URLs) to connect to.
     # Example: ("http://localhost:12434", "http://other:12434")
     mcp_servers: tuple[str, ...] = ()
+    # Optional list of paths or packages to discover user-written skills (markdown files)
+    skills_paths: tuple[str, ...] = (".iklab/skills",)
     plan_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     verify_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     blocked_commands: tuple[str, ...] = (
