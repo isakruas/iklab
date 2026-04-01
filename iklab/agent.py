@@ -116,10 +116,14 @@ class Agent:
             memo = {"role": "assistant", "content": f"<MEMO: {summary}>"}
             last_two = self.transcript.entries[-2:]
             self.transcript.entries[:] = [memo] + last_two
-            self.history.add("summarize", f"Compacted transcript to {len(self.transcript)} entries")
+            self.history.add(
+                "summarize", f"Compacted transcript to {len(self.transcript)} entries"
+            )
         except Exception as exc:
             # Summarization failed (timeout, network, etc.) — fall back to simple compaction
-            print(f"{Y}[WARN] Summarize failed ({type(exc).__name__}), compacting locally.{R}")
+            print(
+                f"{Y}[WARN] Summarize failed ({type(exc).__name__}), compacting locally.{R}"
+            )
             self.transcript.compact(keep_last=10)
             self.history.add("summarize_fallback", f"Local compact after error: {exc}")
 
@@ -142,7 +146,9 @@ class Agent:
 
             await self._summarize()
 
-            messages = [{"role": "system", "content": self._build_system_prompt()}] + self.transcript.entries
+            messages = [
+                {"role": "system", "content": self._build_system_prompt()}
+            ] + self.transcript.entries
             data = await chat(messages, self.tools)
             message = data["choices"][0]["message"]
             content = message.get("content", "")
@@ -157,7 +163,9 @@ class Agent:
             # Extract expert protocol
             if "<EXPERT_PROTOCOL>" in content:
                 print(f"{C}{B}[ORCHESTRATION] Meta-Protocol Updated.{R}")
-                match = re.search(r"<EXPERT_PROTOCOL>(.*?)</EXPERT_PROTOCOL>", content, re.DOTALL)
+                match = re.search(
+                    r"<EXPERT_PROTOCOL>(.*?)</EXPERT_PROTOCOL>", content, re.DOTALL
+                )
                 if match:
                     self.current_expert_protocol = match.group(1).strip()
                     self.history.add("protocol_update", "Expert protocol updated")
@@ -171,19 +179,31 @@ class Agent:
             # Force tool usage when model tries to chat instead of act
             if not tool_calls and ("```" in content or "install" in content.lower()):
                 print(f"{Y}[HINT] Model trying to chat. Forcing tool usage...{R}")
-                self.transcript.append({
-                    "role": "user",
-                    "content": "STRICT_HINT: Do not explain. Use [Write] or [Bash] tools to EXECUTE the code/command shown above now.",
-                })
+                self.transcript.append(
+                    {
+                        "role": "user",
+                        "content": "STRICT_HINT: Do not explain. Use [Write] or [Bash] tools to EXECUTE the code/command shown above now.",
+                    }
+                )
                 # Record a turn for the hint round
-                turn = TurnResult(content=content, input_tokens=in_tok, output_tokens=out_tok, stop_reason="hint")
+                turn = TurnResult(
+                    content=content,
+                    input_tokens=in_tok,
+                    output_tokens=out_tok,
+                    stop_reason="hint",
+                )
                 self.query_engine.record_turn(turn)
                 continue
 
             if not tool_calls:
                 last_content = content
                 # Record final turn
-                turn = TurnResult(content=content, input_tokens=in_tok, output_tokens=out_tok, stop_reason="end_turn")
+                turn = TurnResult(
+                    content=content,
+                    input_tokens=in_tok,
+                    output_tokens=out_tok,
+                    stop_reason="end_turn",
+                )
                 self.query_engine.record_turn(turn)
                 break
 
@@ -202,27 +222,33 @@ class Agent:
                 if not self.approver.approve(fn_name, args_str):
                     output = f"Denied: user refused permission for {fn_name}"
                     print(f"       {RED}-> {output}{R}")
-                    self.transcript.append({
-                        "role": "tool",
-                        "tool_call_id": tc["id"],
-                        "content": output,
-                    })
+                    self.transcript.append(
+                        {
+                            "role": "tool",
+                            "tool_call_id": tc["id"],
+                            "content": output,
+                        }
+                    )
                     self.history.add("tool_denied", fn_name)
                     tool_call_records.append(tc)
                     continue
 
                 try:
                     result = await self.session.call_tool(fn_name, fn_args)
-                    output = "\n".join(b.text for b in result.content if hasattr(b, "text"))
+                    output = "\n".join(
+                        b.text for b in result.content if hasattr(b, "text")
+                    )
                 except Exception as e:
                     output = f"Error: {e}"
 
                 print(f"       {D}-> {output[:200].replace(chr(10), ' ')}...{R}")
-                self.transcript.append({
-                    "role": "tool",
-                    "tool_call_id": tc["id"],
-                    "content": output,
-                })
+                self.transcript.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": tc["id"],
+                        "content": output,
+                    }
+                )
                 self.history.add("tool_call", f"{fn_name} -> {output[:80]}")
                 tool_call_records.append(tc)
 
@@ -290,7 +316,9 @@ async def run_interactive(
                 try:
                     prev = load_session(session_id)
                     transcript_entries = list(prev.messages)
-                    print(f"{D}Restored session {session_id} ({len(transcript_entries)} messages).{R}\n")
+                    print(
+                        f"{D}Restored session {session_id} ({len(transcript_entries)} messages).{R}\n"
+                    )
                 except FileNotFoundError:
                     print(f"{Y}Session {session_id} not found, starting fresh.{R}\n")
                     session_id = None

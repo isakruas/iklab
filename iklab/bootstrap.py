@@ -20,14 +20,16 @@ class BootstrapGraph:
 
 def build_bootstrap_graph() -> BootstrapGraph:
     """Return the standard agent bootstrap sequence."""
-    return BootstrapGraph(stages=(
-        "load_config",
-        "set_sandbox",
-        "start_mcp_server",
-        "load_tools",
-        "build_registry",
-        "build_tool_pool",
-        "build_prompt",
-        "initialize_agent",
-        "ready",
-    ))
+    return BootstrapGraph(
+        stages=(
+            "load_config",
+            "set_sandbox",
+            "start_mcp_server",
+            "load_tools",
+            "build_registry",
+            "build_tool_pool",
+            "build_prompt",
+            "initialize_agent",
+            "ready",
+        )
+    )

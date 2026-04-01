@@ -2,12 +2,11 @@ from __future__ import annotations
 
 """Planning tools — use the model to analyze projects and create execution plans."""
 
-import pathlib
 
-from . import mcp
-from .. import sandbox, ignore, model
+from .. import ignore, model, sandbox
 from ..config import get_config
 from ..prompts import load
+from . import mcp
 
 AGENT_SYSTEM = load("system")
 
@@ -26,7 +25,7 @@ async def analyze_project(directory: str = ".") -> str:
         tag = " [binary]" if ignore.is_binary(fpath) else ""
         size = fpath.stat().st_size if fpath.exists() else 0
         tree_lines.append(f"{indent}{fpath.name} ({size}b){tag}")
-    tree = "\n".join(tree_lines[:get_config().max_walk_files])
+    tree = "\n".join(tree_lines[: get_config().max_walk_files])
 
     key_content = ""
     budget = 15_000
@@ -47,7 +46,9 @@ async def analyze_project(directory: str = ".") -> str:
         key_content += entry
 
     prompt = f"Project tree ({len(all_files)} files):\n{tree}\n\nFile contents:\n{key_content}"
-    return await model.ask(AGENT_SYSTEM, f"Analyze this project completely:\n\n{prompt}")
+    return await model.ask(
+        AGENT_SYSTEM, f"Analyze this project completely:\n\n{prompt}"
+    )
 
 
 @mcp.tool(name="PlanTask")

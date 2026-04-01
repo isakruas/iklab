@@ -2,12 +2,12 @@ from __future__ import annotations
 
 """MCP Server — imports all tools and runs the server."""
 
-import os
-from . import sandbox
 import importlib
 import importlib.util
 import os
 from pathlib import Path
+
+from . import sandbox
 from .config import get_config
 
 # Set workdir from env (passed by CLI) before importing tools

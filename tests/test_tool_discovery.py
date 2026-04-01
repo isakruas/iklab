@@ -1,8 +1,6 @@
-import os
 import json
 from pathlib import Path
 
-import pytest
 
 from iklab.tool_registry import build_tool_registry
 
@@ -51,6 +49,7 @@ def test_discovery_from_settings(tmp_path, monkeypatch):
 
     # Clear cached config so build_tool_registry reads our IKLAB_SETTINGS
     import iklab.config as ikconfig
+
     ikconfig._config = None
 
     # Build registry and assert the tool name is present

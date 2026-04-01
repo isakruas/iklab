@@ -1,4 +1,4 @@
 {
-  "tool_paths": ["./", "./tools", "iklab.tools"],
-  "mcp_servers": ["http://localhost:12434"]
+  "tool_paths": ["./tools", "iklab.tools"],
+  "skills_paths": [".iklab/skills"]
 }

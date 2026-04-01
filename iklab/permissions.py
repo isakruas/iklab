@@ -3,9 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 # Tools that are always safe (read-only context)
-AUTO_APPROVE_TOOLS = frozenset({
-    "ListDirectory", "Read", "Glob", "Grep",
-})
+AUTO_APPROVE_TOOLS = frozenset(
+    {
+        "ListDirectory",
+        "Read",
+        "Glob",
+        "Grep",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -68,10 +73,14 @@ class ToolApprover:
         Y = "\033[33m"
         B = "\033[1m"
         try:
-            answer = input(
-                f"  {Y}{B}[Permission]{R} Allow {B}{tool_name}{R}({args_summary})? "
-                f"[{B}y{R}es / {B}n{R}o / {B}a{R}lways]: "
-            ).strip().lower()
+            answer = (
+                input(
+                    f"  {Y}{B}[Permission]{R} Allow {B}{tool_name}{R}({args_summary})? "
+                    f"[{B}y{R}es / {B}n{R}o / {B}a{R}lways]: "
+                )
+                .strip()
+                .lower()
+            )
         except (EOFError, KeyboardInterrupt):
             print()
             return False

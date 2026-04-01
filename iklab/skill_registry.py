@@ -84,20 +84,30 @@ def build_skill_registry() -> SkillRegistry:
 
     found: List[SkillMeta] = []
     for dirpath in candidates:
-        for f in sorted(dirpath.glob("*.md")) + sorted(dirpath.glob("*.markdown")) + sorted(dirpath.glob("*.txt")):
+        for f in (
+            sorted(dirpath.glob("*.md"))
+            + sorted(dirpath.glob("*.markdown"))
+            + sorted(dirpath.glob("*.txt"))
+        ):
             text = _read_text(f)
             meta, body = _parse_front_matter(text)
             name = meta.get("name") or f.stem
-            description = meta.get("description") or (body.splitlines()[0] if body else "")
+            description = meta.get("description") or (
+                body.splitlines()[0] if body else ""
+            )
             triggers = tuple(meta.get("triggers") or [])
-            recommended_tools = tuple(meta.get("recommended_tools") or meta.get("tools") or [])
-            found.append(SkillMeta(
-                name=name,
-                description=description,
-                triggers=triggers,
-                recommended_tools=recommended_tools,
-                body=body,
-                source_path=str(f),
-            ))
+            recommended_tools = tuple(
+                meta.get("recommended_tools") or meta.get("tools") or []
+            )
+            found.append(
+                SkillMeta(
+                    name=name,
+                    description=description,
+                    triggers=triggers,
+                    recommended_tools=recommended_tools,
+                    body=body,
+                    source_path=str(f),
+                )
+            )
 
     return SkillRegistry(skills=tuple(found))

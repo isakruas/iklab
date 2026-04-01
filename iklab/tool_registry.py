@@ -2,10 +2,10 @@ from __future__ import annotations
 
 """Central tool registry — discovers and indexes all MCP tool metadata."""
 
-from dataclasses import dataclass
 import importlib
 import importlib.util
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
 from .config import get_config
@@ -16,9 +16,9 @@ class ToolMeta:
     """Immutable metadata for a single registered tool."""
 
     name: str
-    category: str          # "context", "planning", "execution"
+    category: str  # "context", "planning", "execution"
     description: str
-    source_module: str      # "tools.context", "tools.planning", etc.
+    source_module: str  # "tools.context", "tools.planning", etc.
 
 
 @dataclass(frozen=True)
@@ -38,8 +38,7 @@ class ToolRegistry:
         """Search tools by name or description substring (case-insensitive)."""
         q = query.lower()
         matches = [
-            t for t in self.tools
-            if q in t.name.lower() or q in t.description.lower()
+            t for t in self.tools if q in t.name.lower() or q in t.description.lower()
         ]
         return matches[:limit]
 
@@ -60,7 +59,11 @@ def build_tool_registry() -> ToolRegistry:
     IKLAB_TOOL_PATHS or AgentConfig.tools_paths).
     """
     # Start with the packaged tools (keep existing behaviour)
-    builtins: list[str] = ("iklab.tools.context", "iklab.tools.planning", "iklab.tools.execution")
+    builtins: list[str] = (
+        "iklab.tools.context",
+        "iklab.tools.planning",
+        "iklab.tools.execution",
+    )
 
     all_meta: list[ToolMeta] = []
 
@@ -81,12 +84,14 @@ def build_tool_registry() -> ToolRegistry:
             # If a builtin is missing, skip it — tests rely on being resilient
             continue
         for entry in getattr(module, "TOOL_METADATA", []):
-            all_meta.append(ToolMeta(
-                name=entry["name"],
-                category=entry["category"],
-                description=entry["description"],
-                source_module=entry["source_module"],
-            ))
+            all_meta.append(
+                ToolMeta(
+                    name=entry["name"],
+                    category=entry["category"],
+                    description=entry["description"],
+                    source_module=entry["source_module"],
+                )
+            )
 
     # Now import any additional tool modules from configured paths
     cfg = get_config()
@@ -99,12 +104,14 @@ def build_tool_registry() -> ToolRegistry:
         try:
             module = importlib.import_module(pkg_path)
             for entry in getattr(module, "TOOL_METADATA", []):
-                all_meta.append(ToolMeta(
-                    name=entry["name"],
-                    category=entry["category"],
-                    description=entry["description"],
-                    source_module=entry["source_module"],
-                ))
+                all_meta.append(
+                    ToolMeta(
+                        name=entry["name"],
+                        category=entry["category"],
+                        description=entry["description"],
+                        source_module=entry["source_module"],
+                    )
+                )
             continue
         except Exception:
             # Not importable as package — try filesystem path
@@ -122,12 +129,14 @@ def build_tool_registry() -> ToolRegistry:
                     try:
                         pkg_mod = importlib.import_module(path.replace("/", "."))
                         for entry in getattr(pkg_mod, "TOOL_METADATA", []):
-                            all_meta.append(ToolMeta(
-                                name=entry["name"],
-                                category=entry["category"],
-                                description=entry["description"],
-                                source_module=entry["source_module"],
-                            ))
+                            all_meta.append(
+                                ToolMeta(
+                                    name=entry["name"],
+                                    category=entry["category"],
+                                    description=entry["description"],
+                                    source_module=entry["source_module"],
+                                )
+                            )
                         break
                     except Exception:
                         # Fall back to importing files individually
@@ -137,11 +146,13 @@ def build_tool_registry() -> ToolRegistry:
                     if not mod:
                         continue
                     for entry in getattr(mod, "TOOL_METADATA", []):
-                        all_meta.append(ToolMeta(
-                            name=entry["name"],
-                            category=entry["category"],
-                            description=entry["description"],
-                            source_module=entry.get("source_module", str(py)),
-                        ))
+                        all_meta.append(
+                            ToolMeta(
+                                name=entry["name"],
+                                category=entry["category"],
+                                description=entry["description"],
+                                source_module=entry.get("source_module", str(py)),
+                            )
+                        )
 
     return ToolRegistry(tools=tuple(all_meta))

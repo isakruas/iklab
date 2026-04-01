@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -26,10 +26,22 @@ class AgentConfig:
     plan_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     verify_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     blocked_commands: tuple[str, ...] = (
-        "rm -rf /", "rm -rf /*", "mkfs", "dd if=",
-        ":(){", "fork", "shutdown", "reboot", "poweroff",
-        "chmod -R 777 /", "chown -R", "> /dev/sd",
-        "curl | sh", "curl | bash", "wget | sh", "wget | bash",
+        "rm -rf /",
+        "rm -rf /*",
+        "mkfs",
+        "dd if=",
+        ":(){",
+        "fork",
+        "shutdown",
+        "reboot",
+        "poweroff",
+        "chmod -R 777 /",
+        "chown -R",
+        "> /dev/sd",
+        "curl | sh",
+        "curl | bash",
+        "wget | sh",
+        "wget | bash",
     )
 
 

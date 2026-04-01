@@ -1,59 +1,49 @@
 # Examples
 
-Custom tool templates for IKLab. Copy any of these into `iklab/tools/` and import in `iklab/server.py`.
+Working examples of a custom tool and a custom skill for IKLab.
 
-## Available Examples
+## Structure
 
-| File | Tools | Category |
-|------|-------|----------|
-| `tool_git.py` | `GitStatus`, `GitDiff`, `GitLog` | context |
-| `tool_http.py` | `HttpGet`, `HttpPost` | execution |
-| `tool_docker.py` | `DockerPs`, `DockerLogs`, `DockerImages` | context |
-| `tool_database.py` | `SqlQuery`, `SqlTables` | context |
+```
+examples/
+├── .iklab/
+│   ├── settings.json              # Project settings
+│   └── skills/
+│       └── code_review.md         # Skill: structured code review
+└── tools/
+    └── tool_git.py                # Tool: Git operations (status, diff, log, blame)
+```
 
-## How to Use
-
-### 1. Copy the tool file
+## Quick start
 
 ```bash
-cp examples/tool_git.py iklab/tools/git.py
-```
-
-### 2. Register in server.py
-
-Edit `iklab/server.py` and add the import:
-
-```python
-from .tools import context, planning, execution  # existing
-from .tools import git  # noqa: F401  <-- add this
-```
-
-### 3. Add to registry (optional)
-
-To include in the tool registry (for filtering/pool), edit `iklab/tool_registry.py`:
-
-```python
-def build_tool_registry() -> ToolRegistry:
-    from .tools import context, planning, execution, git  # <-- add module
-
-    all_meta: list[ToolMeta] = []
-    for module in (context, planning, execution, git):  # <-- add to list
-        ...
-```
-
-### 4. Reinstall and run
-
-```bash
-pip install -e .
+cd examples
 iklab
 ```
 
-## Writing Your Own Tool
+IKLab will read `.iklab/settings.json`, discover the Git tools in `./tools`,
+and load the Code Review skill from `.iklab/skills`. Ask the agent to
+"review my changes" and it will use both automatically.
 
-Every tool module needs:
+## Custom tool — `tools/tool_git.py`
 
-1. **Tool functions** decorated with `@mcp.tool(name="ToolName")`
-2. **TOOL_METADATA** list with name, category, description, source_module
+Provides four read-only Git tools:
+
+| Tool | Description |
+|------|-------------|
+| `GitStatus` | Working-tree status (staged, unstaged, untracked) |
+| `GitDiff` | Line-level diff (optionally staged, optionally per-file) |
+| `GitLog` | Recent commit history with decoration |
+| `GitBlame` | Per-line authorship for a file range |
+
+All tools are in the **context** category (read-only, auto-approved).
+
+### Anatomy of a tool module
+
+Every tool module needs two things:
+
+1. **Functions** decorated with `@mcp.tool(name="ToolName")` that return `str`.
+2. **`TOOL_METADATA`** list so the registry can discover and categorize them.
 
 ```python
 from iklab.tools import mcp
@@ -66,7 +56,7 @@ def my_tool(arg: str) -> str:
 TOOL_METADATA = [
     {
         "name": "MyTool",
-        "category": "execution",  # or "context", "planning"
+        "category": "context",        # "context" | "planning" | "execution"
         "description": "Description shown to the model.",
         "source_module": "tools.my_module",
     },
@@ -74,6 +64,46 @@ TOOL_METADATA = [
 ```
 
 Categories:
-- **context** — read-only, auto-approved (no permission prompt)
-- **planning** — analysis/planning, requires approval
+- **context** — read-only, auto-approved
+- **planning** — analysis, requires approval
 - **execution** — writes/commands, requires approval
+
+## Custom skill — `.iklab/skills/code_review.md`
+
+A skill is a Markdown file with YAML front-matter that teaches the agent a
+multi-step workflow. When the user says something that matches a trigger
+(e.g. "review my changes"), the agent follows the skill's instructions and
+uses its recommended tools.
+
+### Anatomy of a skill file
+
+```yaml
+---
+name: Code Review
+triggers:
+  - review
+  - diff
+recommended_tools:
+  - GitDiff
+  - Read
+description: Short description shown in the system prompt.
+---
+
+Step-by-step instructions the agent follows when this skill is activated.
+```
+
+## Configuration — `.iklab/settings.json`
+
+```json
+{
+  "tool_paths": ["./tools", "iklab.tools"],
+  "skills_paths": [".iklab/skills"]
+}
+```
+
+- **tool_paths** — directories or Python packages to scan for tool modules.
+- **skills_paths** — directories to scan for `.md` skill files.
+
+Both accept relative paths (resolved from the project root) or absolute paths.
+Environment variables `IKLAB_TOOL_PATHS` and `IKLAB_SKILL_PATHS` (colon-separated)
+can override or extend these.

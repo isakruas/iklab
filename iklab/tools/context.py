@@ -3,11 +3,10 @@ from __future__ import annotations
 """Context tools — read-only filesystem access for gathering information."""
 
 import fnmatch
-import pathlib
 
-from . import mcp
-from .. import sandbox, ignore
+from .. import ignore, sandbox
 from ..config import get_config
+from . import mcp
 
 
 @mcp.tool(name="ListDirectory")
@@ -46,7 +45,8 @@ def glob_files(pattern: str, directory: str = ".") -> str:
     base = sandbox.resolve(directory)
     all_files = ignore.walk_project(base)
     matches = [
-        f for f in all_files
+        f
+        for f in all_files
         if fnmatch.fnmatch(str(f.relative_to(base)), pattern)
         or fnmatch.fnmatch(f.name, pattern)
     ]
@@ -54,7 +54,7 @@ def glob_files(pattern: str, directory: str = ".") -> str:
         return "No files found."
     cfg = get_config()
     return "\n".join(
-        str(m.relative_to(sandbox.WORKDIR)) for m in matches[:cfg.max_search_results]
+        str(m.relative_to(sandbox.WORKDIR)) for m in matches[: cfg.max_search_results]
     )
 
 
@@ -62,7 +62,9 @@ def glob_files(pattern: str, directory: str = ".") -> str:
 def grep_content(text: str, directory: str = ".", extensions: str = "") -> str:
     """Search for text inside files, respecting ignore rules. Extensions: '.py,.js'"""
     base = sandbox.resolve(directory)
-    exts = [e.strip() for e in extensions.split(",") if e.strip()] if extensions else None
+    exts = (
+        [e.strip() for e in extensions.split(",") if e.strip()] if extensions else None
+    )
     all_files = ignore.walk_project(base)
     results = []
     for fpath in all_files:

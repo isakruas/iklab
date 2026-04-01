@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from iklab.permissions import ToolPermissionContext
-from iklab.tool_pool import SIMPLE_TOOLS, ToolPool, assemble_tool_pool
-from iklab.tool_registry import ToolMeta, ToolRegistry, build_tool_registry
+from iklab.tool_pool import SIMPLE_TOOLS, assemble_tool_pool
+from iklab.tool_registry import ToolRegistry, build_tool_registry
 
 
 def _full_registry() -> ToolRegistry:
@@ -71,7 +71,9 @@ def test_names_sorted():
 
 def test_combined_filters():
     ctx = ToolPermissionContext.from_iterables(deny_names=["Read"])
-    pool = assemble_tool_pool(_full_registry(), simple_mode=True, permission_context=ctx)
+    pool = assemble_tool_pool(
+        _full_registry(), simple_mode=True, permission_context=ctx
+    )
     names = pool.names()
     assert "Read" not in names
     for n in names:

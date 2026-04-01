@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 
 from iklab.config import load_config
 from iklab.models import AgentConfig
@@ -24,5 +23,6 @@ def test_env_override(monkeypatch):
 def test_config_is_frozen():
     cfg = load_config()
     import pytest
+
     with pytest.raises(AttributeError):
         cfg.model_name = "other"

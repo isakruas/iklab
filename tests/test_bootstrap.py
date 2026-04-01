@@ -18,9 +18,15 @@ def test_stages_order():
 def test_all_stages_present():
     graph = build_bootstrap_graph()
     expected = {
-        "load_config", "set_sandbox", "start_mcp_server",
-        "load_tools", "build_registry", "build_tool_pool",
-        "build_prompt", "initialize_agent", "ready",
+        "load_config",
+        "set_sandbox",
+        "start_mcp_server",
+        "load_tools",
+        "build_registry",
+        "build_tool_pool",
+        "build_prompt",
+        "initialize_agent",
+        "ready",
     }
     assert set(graph.stages) == expected
 

@@ -2,27 +2,79 @@ from __future__ import annotations
 
 """Ignore system: respects .gitignore, .dockerignore, .llmignore, etc."""
 
-import os
 import fnmatch
+import os
 import pathlib
 import re
 
-IGNORE_FILES = (".gitignore", ".dockerignore", ".llmignore", ".hgignore", ".eslintignore")
+IGNORE_FILES = (
+    ".gitignore",
+    ".dockerignore",
+    ".llmignore",
+    ".hgignore",
+    ".eslintignore",
+)
 
 ALWAYS_IGNORE_DIRS = {
-    ".git", ".hg", ".svn", "node_modules", "__pycache__",
-    ".venv", "venv", ".tox", ".mypy_cache", ".pytest_cache",
-    ".next", ".nuxt", "dist", "build", ".cache", ".eggs",
+    ".git",
+    ".hg",
+    ".svn",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".tox",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".next",
+    ".nuxt",
+    "dist",
+    "build",
+    ".cache",
+    ".eggs",
 }
 
 BINARY_EXTENSIONS = {
-    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".webp", ".svg",
-    ".mp3", ".mp4", ".avi", ".mov", ".wav", ".flac",
-    ".zip", ".tar", ".gz", ".bz2", ".xz", ".rar", ".7z",
-    ".exe", ".dll", ".so", ".dylib", ".bin", ".o", ".a",
-    ".pdf", ".woff", ".woff2", ".ttf", ".eot",
-    ".pyc", ".pyo", ".class", ".jar",
-    ".db", ".sqlite", ".sqlite3",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".ico",
+    ".webp",
+    ".svg",
+    ".mp3",
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".wav",
+    ".flac",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".bz2",
+    ".xz",
+    ".rar",
+    ".7z",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".bin",
+    ".o",
+    ".a",
+    ".pdf",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".pyc",
+    ".pyo",
+    ".class",
+    ".jar",
+    ".db",
+    ".sqlite",
+    ".sqlite3",
 }
 
 

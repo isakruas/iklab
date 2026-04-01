@@ -2,7 +2,6 @@ from __future__ import annotations
 
 """Sandbox: all filesystem access is restricted to WORKDIR."""
 
-import os
 import pathlib
 
 # Set once at startup by the CLI or server entry point.
@@ -30,7 +29,9 @@ def resolve(path: str) -> pathlib.Path:
     try:
         p.relative_to(WORKDIR)
     except ValueError:
-        raise PermissionError(f"Access denied: '{path}' resolves to '{p}' which is outside '{WORKDIR}'.")
+        raise PermissionError(
+            f"Access denied: '{path}' resolves to '{p}' which is outside '{WORKDIR}'."
+        )
 
     # Block symlinks that point outside WORKDIR
     if p.is_symlink():
@@ -38,7 +39,9 @@ def resolve(path: str) -> pathlib.Path:
         try:
             real.relative_to(WORKDIR)
         except ValueError:
-            raise PermissionError(f"Access denied: symlink '{path}' points to '{real}' outside '{WORKDIR}'.")
+            raise PermissionError(
+                f"Access denied: symlink '{path}' points to '{real}' outside '{WORKDIR}'."
+            )
 
     return p
 

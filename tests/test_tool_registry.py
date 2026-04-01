@@ -4,12 +4,34 @@ from iklab.tool_registry import ToolMeta, ToolRegistry, build_tool_registry
 
 
 def _sample_registry() -> ToolRegistry:
-    return ToolRegistry(tools=(
-        ToolMeta(name="Read", category="context", description="Read a file", source_module="tools.context"),
-        ToolMeta(name="Write", category="execution", description="Write a file", source_module="tools.execution"),
-        ToolMeta(name="Bash", category="execution", description="Run a shell command", source_module="tools.execution"),
-        ToolMeta(name="PlanTask", category="planning", description="Create a plan", source_module="tools.planning"),
-    ))
+    return ToolRegistry(
+        tools=(
+            ToolMeta(
+                name="Read",
+                category="context",
+                description="Read a file",
+                source_module="tools.context",
+            ),
+            ToolMeta(
+                name="Write",
+                category="execution",
+                description="Write a file",
+                source_module="tools.execution",
+            ),
+            ToolMeta(
+                name="Bash",
+                category="execution",
+                description="Run a shell command",
+                source_module="tools.execution",
+            ),
+            ToolMeta(
+                name="PlanTask",
+                category="planning",
+                description="Create a plan",
+                source_module="tools.planning",
+            ),
+        )
+    )
 
 
 def test_get_found():

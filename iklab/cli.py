@@ -24,7 +24,9 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {__version__}",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
         "task",
@@ -99,22 +101,26 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.task:
         task = " ".join(args.task)
-        asyncio.run(run_single_task(
-            task,
-            simple_mode=args.simple_mode,
-            permission_context=perm_ctx,
-            max_turns=args.max_turns,
-            approver=approver,
-        ))
+        asyncio.run(
+            run_single_task(
+                task,
+                simple_mode=args.simple_mode,
+                permission_context=perm_ctx,
+                max_turns=args.max_turns,
+                approver=approver,
+            )
+        )
     else:
-        asyncio.run(run_interactive(
-            simple_mode=args.simple_mode,
-            permission_context=perm_ctx,
-            max_turns=args.max_turns,
-            session_id=args.session,
-            show_history=args.history,
-            approver=approver,
-        ))
+        asyncio.run(
+            run_interactive(
+                simple_mode=args.simple_mode,
+                permission_context=perm_ctx,
+                max_turns=args.max_turns,
+                session_id=args.session,
+                show_history=args.history,
+                approver=approver,
+            )
+        )
 
 
 if __name__ == "__main__":

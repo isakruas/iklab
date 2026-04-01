@@ -1,10 +1,9 @@
 import json
-from pathlib import Path
-import pytest
 
-from iklab.skill_registry import build_skill_registry
-from iklab.prompt_builder import build_system_prompt
+
 from iklab.config import get_config
+from iklab.prompt_builder import build_system_prompt
+from iklab.skill_registry import build_skill_registry
 
 
 def test_skill_discovery_and_prompt(tmp_path, monkeypatch):
@@ -26,6 +25,7 @@ def test_skill_discovery_and_prompt(tmp_path, monkeypatch):
 
     # Clear cached config
     import iklab.config as ikconfig
+
     ikconfig._config = None
 
     reg = build_skill_registry()

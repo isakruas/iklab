@@ -6,10 +6,10 @@ import subprocess
 
 import httpx
 
-from . import mcp
-from .. import sandbox, model
+from .. import model, sandbox
 from ..config import get_config
 from ..prompts import load
+from . import mcp
 
 AGENT_SYSTEM = load("system")
 
@@ -86,13 +86,13 @@ async def web_search(query: str) -> str:
             continue
         chunk = part[:title_end]
         ts = chunk.rfind(">")
-        title = chunk[ts + 1:].strip() if ts != -1 else ""
+        title = chunk[ts + 1 :].strip() if ts != -1 else ""
 
         hs = part.find('href="')
         href = ""
         if hs != -1:
             he = part.find('"', hs + 6)
-            href = part[hs + 6:he]
+            href = part[hs + 6 : he]
 
         snippet = ""
         sm = part.find('class="result__snippet"')

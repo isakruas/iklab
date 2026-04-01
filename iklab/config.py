@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 from pathlib import Path
 
 from .models import AgentConfig
-from typing import Iterable
 
 
 def load_config() -> AgentConfig:
@@ -53,19 +52,25 @@ def load_config() -> AgentConfig:
                 data = json.load(fh)
             tp = data.get("tool_paths")
             if isinstance(tp, list):
-                file_tool_paths = tuple(str(x) for x in tp if isinstance(x, str) and x.strip())
+                file_tool_paths = tuple(
+                    str(x) for x in tp if isinstance(x, str) and x.strip()
+                )
             elif isinstance(tp, str):
                 file_tool_paths = _parse_paths(tp)
 
             ms = data.get("mcp_servers") or data.get("mcps")
             if isinstance(ms, list):
-                file_mcp_servers = tuple(str(x) for x in ms if isinstance(x, str) and x.strip())
+                file_mcp_servers = tuple(
+                    str(x) for x in ms if isinstance(x, str) and x.strip()
+                )
             elif isinstance(ms, str):
                 file_mcp_servers = _parse_paths(ms)
             sp = data.get("skills_paths") or data.get("skill_paths")
             file_skills_paths: tuple[str, ...] = ()
             if isinstance(sp, list):
-                file_skills_paths = tuple(str(x) for x in sp if isinstance(x, str) and x.strip())
+                file_skills_paths = tuple(
+                    str(x) for x in sp if isinstance(x, str) and x.strip()
+                )
             elif isinstance(sp, str):
                 file_skills_paths = _parse_paths(sp)
         except Exception:
@@ -131,14 +136,18 @@ def load_config() -> AgentConfig:
             "IKLAB_MODEL_NAME",
             AgentConfig.model_name,
         ),
-        model_timeout=int(os.environ.get(
-            "IKLAB_MODEL_TIMEOUT",
-            str(AgentConfig.model_timeout),
-        )),
-        max_validation_retries=int(os.environ.get(
-            "IKLAB_MAX_RETRIES",
-            str(AgentConfig.max_validation_retries),
-        )),
+        model_timeout=int(
+            os.environ.get(
+                "IKLAB_MODEL_TIMEOUT",
+                str(AgentConfig.model_timeout),
+            )
+        ),
+        max_validation_retries=int(
+            os.environ.get(
+                "IKLAB_MAX_RETRIES",
+                str(AgentConfig.max_validation_retries),
+            )
+        ),
         tools_paths=combined,
         mcp_servers=combined_mcps,
         skills_paths=combined_skills,

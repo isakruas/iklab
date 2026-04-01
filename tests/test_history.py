@@ -5,6 +5,7 @@ from iklab.history import HistoryEvent, HistoryLog
 
 def test_history_event_frozen():
     import pytest
+
     e = HistoryEvent(title="test", detail="detail")
     with pytest.raises(AttributeError):
         e.title = "other"

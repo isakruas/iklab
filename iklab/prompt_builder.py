@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from .models import AgentConfig
 from .prompts import load
-from .tool_pool import ToolPool
 from .skill_registry import build_skill_registry
+from .tool_pool import ToolPool
 
 
 def build_system_prompt(
