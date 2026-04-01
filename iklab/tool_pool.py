@@ -8,7 +8,7 @@ from .permissions import ToolPermissionContext
 from .tool_registry import ToolMeta, ToolRegistry
 
 # Tools allowed when simple_mode is active
-SIMPLE_TOOLS = frozenset({"Read", "ListDirectory", "Glob", "Grep"})
+SIMPLE_TOOLS = frozenset({"Read", "List", "Glob", "Grep"})
 
 
 @dataclass(frozen=True)

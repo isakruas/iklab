@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--simple-mode",
         action="store_true",
         default=False,
-        help="restrict to context-only tools (Read, ListDirectory, Glob, Grep)",
+        help="restrict to context-only tools (Read, List, Glob, Grep)",
     )
     parser.add_argument(
         "--deny-tool",

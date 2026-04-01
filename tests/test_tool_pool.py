@@ -28,20 +28,20 @@ def test_phase_plan():
     names = pool.names()
     # plan_tools default = {ListDirectory, Read, Glob, Grep}
     for n in names:
-        assert n in {"ListDirectory", "Read", "Glob", "Grep"}
+        assert n in {"List", "Read", "Glob", "Grep"}
 
 
 def test_phase_verify():
     pool = assemble_tool_pool(_full_registry(), phase="verify")
     names = pool.names()
     for n in names:
-        assert n in {"ListDirectory", "Read", "Glob", "Grep"}
+        assert n in {"List", "Read", "Glob", "Grep"}
 
 
 def test_permission_deny():
-    ctx = ToolPermissionContext.from_iterables(deny_names=["Bash"])
+    ctx = ToolPermissionContext.from_iterables(deny_names=["Shell"])
     pool = assemble_tool_pool(_full_registry(), permission_context=ctx)
-    assert "Bash" not in pool.names()
+    assert "Shell" not in pool.names()
 
 
 def test_permission_deny_prefix():

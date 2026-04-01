@@ -15,7 +15,7 @@ def test_skill_discovery_and_prompt(tmp_path, monkeypatch):
         "---\n"
         "name: TestSkill\n"
         "triggers: [test]\n"
-        "recommended_tools: [ListDirectory]\n"
+        "recommended_tools: [List]\n"
         "description: 'A test skill'\n"
         "---\n"
         "\n"

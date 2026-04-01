@@ -19,9 +19,9 @@ def _sample_registry() -> ToolRegistry:
                 source_module="tools.execution",
             ),
             ToolMeta(
-                name="Bash",
+                name="Shell",
                 category="execution",
-                description="Run a shell command",
+                description="Execute a shell command",
                 source_module="tools.execution",
             ),
             ToolMeta(
@@ -49,9 +49,9 @@ def test_get_not_found():
 
 def test_find_by_name():
     reg = _sample_registry()
-    results = reg.find("bash")
+    results = reg.find("shell")
     assert len(results) == 1
-    assert results[0].name == "Bash"
+    assert results[0].name == "Shell"
 
 
 def test_find_by_description():
@@ -82,7 +82,7 @@ def test_by_category_empty():
 
 def test_names():
     reg = _sample_registry()
-    assert reg.names() == ["Bash", "PlanTask", "Read", "Write"]
+    assert reg.names() == ["PlanTask", "Read", "Shell", "Write"]
 
 
 def test_build_tool_registry():
@@ -92,7 +92,7 @@ def test_build_tool_registry():
     names = reg.names()
     assert "Read" in names
     assert "Write" in names
-    assert "Bash" in names
+    assert "Shell" in names
     assert "Glob" in names
     assert "Grep" in names
     assert "AnalyzeProject" in names

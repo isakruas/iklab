@@ -10,9 +10,9 @@ def test_empty_context_allows_all():
 
 
 def test_deny_by_name():
-    ctx = ToolPermissionContext.from_iterables(deny_names=["Bash"])
-    assert ctx.blocks("Bash") is True
-    assert ctx.blocks("bash") is True  # case insensitive
+    ctx = ToolPermissionContext.from_iterables(deny_names=["Shell"])
+    assert ctx.blocks("Shell") is True
+    assert ctx.blocks("shell") is True  # case insensitive
     assert ctx.blocks("Read") is False
 
 
@@ -39,7 +39,7 @@ def test_approver_auto_approve_context_tools():
 
 def test_approver_always_approve_all():
     approver = ToolApprover(always_approve_all=True)
-    assert approver.approve("Bash", "command='rm -rf /'") is True
+    assert approver.approve("Shell", "command='rm -rf /'") is True
     assert approver.approve("Write", "path='x'") is True
 
 
@@ -50,6 +50,6 @@ def test_approver_session_approved():
 
 
 def test_approver_custom_auto_approve():
-    approver = ToolApprover(auto_approve=frozenset({"Bash", "Write"}))
-    assert approver.approve("Bash", "") is True
+    approver = ToolApprover(auto_approve=frozenset({"Shell", "Write"}))
+    assert approver.approve("Shell", "") is True
     assert approver.approve("Write", "") is True

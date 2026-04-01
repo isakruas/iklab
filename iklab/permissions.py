@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 # Tools that are always safe (read-only context)
 AUTO_APPROVE_TOOLS = frozenset(
     {
-        "ListDirectory",
+        "List",
         "Read",
         "Glob",
         "Grep",

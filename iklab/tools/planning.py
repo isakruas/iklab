@@ -84,7 +84,7 @@ Key file contents:
 {context}
 
 Create a precise execution plan. Each step must use one of:
-ListDirectory, Read, Glob, Grep, Write, Bash, Think, WebSearch.
+List, Read, Glob, Grep, Write, Shell, Think, WebSearch.
 Format:
 STEP N: [Tool] description
   args: ...

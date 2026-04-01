@@ -23,8 +23,8 @@ class AgentConfig:
     mcp_servers: tuple[str, ...] = ()
     # Optional list of paths or packages to discover user-written skills (markdown files)
     skills_paths: tuple[str, ...] = (".iklab/skills",)
-    plan_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
-    verify_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
+    plan_tools: frozenset[str] = frozenset({"List", "Read", "Glob", "Grep"})
+    verify_tools: frozenset[str] = frozenset({"List", "Read", "Glob", "Grep"})
     blocked_commands: tuple[str, ...] = (
         "rm -rf /",
         "rm -rf /*",
