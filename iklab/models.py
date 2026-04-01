@@ -15,6 +15,12 @@ class AgentConfig:
     max_walk_files: int = 500
     max_search_results: int = 200
     max_read_bytes: int = 50_000
+    # Tuple of import paths or filesystem paths to search for tool modules.
+    # Examples: ("iklab.tools",) or ("./tools", "/home/user/mytools")
+    tools_paths: tuple[str, ...] = ("iklab.tools",)
+    # Optional list of external MCP server endpoints (URLs) to connect to.
+    # Example: ("http://localhost:12434", "http://other:12434")
+    mcp_servers: tuple[str, ...] = ()
     plan_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     verify_tools: frozenset[str] = frozenset({"ListDirectory", "Read", "Glob", "Grep"})
     blocked_commands: tuple[str, ...] = (
