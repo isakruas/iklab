@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iklab"
+version = "0.1.0"
+description = "IKLab — planning-first CLI agent powered by Granite 4.0-H-Tiny"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]",
+    "httpx",
+]
+
+[tool.setuptools.packages.find]
+include = ["iklab*"]
+
+[project.scripts]
+iklab = "iklab.cli:main"
