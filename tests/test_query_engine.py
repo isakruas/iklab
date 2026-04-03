@@ -12,7 +12,7 @@ def _engine(max_turns: int = 3, max_budget: int = 1000, compact_after: int = 5) 
         config=QueryEngineConfig(
             max_turns=max_turns,
             max_budget_tokens=max_budget,
-            compact_after_turns=compact_after,
+            compact_after_entries=compact_after,
         ),
         transcript=Transcript(),
         cost_tracker=CostTracker(),
@@ -82,6 +82,6 @@ def test_record_turn_history():
 
 def test_config_defaults():
     cfg = QueryEngineConfig()
-    assert cfg.max_turns == 50_000
-    assert cfg.max_budget_tokens == 50_000 * 4
-    assert cfg.compact_after_turns == 12
+    assert cfg.max_turns == 200
+    assert cfg.max_budget_tokens == 1_000_000
+    assert cfg.compact_after_entries == 60

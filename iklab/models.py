@@ -11,10 +11,10 @@ class AgentConfig:
     model_name: str = "ai/granite-4.0-h-tiny"
     model_timeout: int = 120
     max_validation_retries: int = 3
-    max_bash_timeout: int = 60
-    max_walk_files: int = 500
+    max_bash_timeout: int = 120
+    max_walk_files: int = 3_000
     max_search_results: int = 200
-    max_read_bytes: int = 50_000
+    max_read_bytes: int = 200_000
     # Tuple of import paths or filesystem paths to search for tool modules.
     # Examples: ("iklab.tools",) or ("./tools", "/home/user/mytools")
     tools_paths: tuple[str, ...] = ("iklab.tools",)
@@ -22,7 +22,7 @@ class AgentConfig:
     # Example: ("http://localhost:12434", "http://other:12434")
     mcp_servers: tuple[str, ...] = ()
     # Optional list of paths or packages to discover user-written skills (markdown files)
-    skills_paths: tuple[str, ...] = (".iklab/skills",)
+    skills_paths: tuple[str, ...] = (".iklab/skills", "iklab/skills")
     plan_tools: frozenset[str] = frozenset({"List", "Read", "Glob", "Grep"})
     verify_tools: frozenset[str] = frozenset({"List", "Read", "Glob", "Grep"})
     blocked_commands: tuple[str, ...] = (

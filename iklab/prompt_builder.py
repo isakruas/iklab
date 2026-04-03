@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from .models import AgentConfig
 from .prompts import load
 from .skill_registry import build_skill_registry
@@ -14,63 +16,71 @@ def build_system_prompt(
     expert_protocol: str = "",
     history_summary: str = "",
 ) -> str:
-    """Compose the full system prompt from separate sections.
+    """Compose the full system prompt.
 
-    Sections
-    --------
-    1. Kernel base — loaded from ``prompts/system.txt``
-    2. Available tools — rendered from the current ToolPool
-    3. Active expert protocol — dynamic persona/rules
-    4. History summary — compacted transcript context
-    5. Agent configuration hints
+    Layout (optimized for Granite + MoE Router pattern)
+    ----------------------------------------------------
+    1. Kernel base — MoE Router definition, rules, constraints
+    2. Available Tools — dynamic from ToolPool
+    3. Available Skills — discovered from skill registry
+    4. Active Expert Protocol — current MoE expert (or instruction to ORCHESTRATE)
+    5. Runtime context — datetime, history summary, config
     """
     sections: list[str] = []
 
-    # 1. Kernel base
+    # 1. Kernel base — MoE Router, rules, constraints, output format
     sections.append(load("system"))
 
-    # 2. Available tools
-    tool_section = tool_pool.as_markdown()
+    # 2. Available Tools — generated from the live tool registry
+    tool_section = tool_pool.as_prompt_section()
     if tool_section:
         sections.append(tool_section)
 
-    # 2.5 Skill guidance: include matched skills (small snippets)
+    # 3. Available Skills — loaded from skill files
     try:
         skill_reg = build_skill_registry()
-        # naive: include first 2 skills as guidance (could be improved by triggers)
-        skill_snippets = []
-        for s in list(skill_reg.skills)[:2]:
-            tools_list = ", ".join(s.recommended_tools)
-            first_line = s.body.splitlines()[0] if s.body else ""
-            snippet = (
-                f"<SKILL:{s.name}>\n"
-                f"Description: {s.description}\n"
-                f"Recommended tools: {tools_list}\n"
-                f"{first_line}\n"
-                f"</SKILL:{s.name}>"
-            )
-            skill_snippets.append(snippet)
-        if skill_snippets:
-            sections.append("\n".join(skill_snippets))
+        if skill_reg.skills:
+            skill_parts = ["<SKILLS>"]
+            for s in skill_reg.skills:
+                tools_csv = ", ".join(s.recommended_tools) if s.recommended_tools else "any"
+                triggers_csv = ", ".join(s.triggers) if s.triggers else ""
+                body_lines = s.body.strip().splitlines()
+                body_preview = "\n".join(body_lines[:10]) if body_lines else ""
+                skill_parts.append(
+                    f'<SKILL name="{s.name}">\n'
+                    f"Description: {s.description}\n"
+                    f"Triggers: {triggers_csv}\n"
+                    f"Tools: {tools_csv}\n"
+                    f"{body_preview}\n"
+                    f"</SKILL>"
+                )
+            skill_parts.append("</SKILLS>")
+            sections.append("\n".join(skill_parts))
     except Exception:
-        # skill discovery is best-effort
         pass
 
-    # 3. Active expert protocol
+    # 4. Active Expert Protocol (MoE Router state)
     if expert_protocol:
         sections.append(f"<ACTIVE_EXPERT_PROTOCOL>\n{expert_protocol}\n</ACTIVE_EXPERT_PROTOCOL>")
     else:
-        sections.append("ACTIVE_EXPERT_PROTOCOL:\nNone. First, ORCHESTRATE a specialized protocol.")
+        sections.append(
+            "<ACTIVE_EXPERT_PROTOCOL>\n"
+            "None active. You MUST ORCHESTRATE a specialized protocol in your first response.\n"
+            "Generate an <EXPERT_PROTOCOL> block as defined in <MoE_ROUTER>.\n"
+            "</ACTIVE_EXPERT_PROTOCOL>"
+        )
 
-    # 4. History summary
+    # 5. Runtime context
+    now = datetime.now(timezone.utc).astimezone()
+    context_parts = [
+        "<CONTEXT>",
+        f"Date: {now.strftime('%Y-%m-%d %H:%M %Z')}",
+        f"Config: {cfg.model_name} | retries={cfg.max_validation_retries} | bash_timeout={cfg.max_bash_timeout}s",
+    ]
     if history_summary:
-        sections.append(f"<HISTORY_SUMMARY>\n{history_summary}\n</HISTORY_SUMMARY>")
-
-    # 5. Configuration hints
-    config_hints = (
-        f"Model: {cfg.model_name} | Max retries: {cfg.max_validation_retries} | Bash timeout: {cfg.max_bash_timeout}s"
-    )
-    sections.append(f"<CONFIG>\n{config_hints}\n</CONFIG>")
+        context_parts.append(f"<HISTORY_SUMMARY>\n{history_summary}\n</HISTORY_SUMMARY>")
+    context_parts.append("</CONTEXT>")
+    sections.append("\n".join(context_parts))
 
     # Final directive
     sections.append("CRITICAL: Use TOOLS, not text.")

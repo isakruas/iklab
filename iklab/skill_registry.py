@@ -82,6 +82,11 @@ def build_skill_registry() -> SkillRegistry:
     if local.exists() and local not in candidates:
         candidates.append(local)
 
+    # also check package-internal skills directory (iklab/skills/)
+    pkg_skills = Path(__file__).parent / "skills"
+    if pkg_skills.exists() and pkg_skills.is_dir() and pkg_skills not in candidates:
+        candidates.append(pkg_skills)
+
     found: List[SkillMeta] = []
     for dirpath in candidates:
         for f in sorted(dirpath.glob("*.md")) + sorted(dirpath.glob("*.markdown")) + sorted(dirpath.glob("*.txt")):

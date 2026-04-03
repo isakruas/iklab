@@ -24,7 +24,7 @@ def _make(tmp_path: pathlib.Path, name: str, lines: int) -> pathlib.Path:
 def test_read_first_lines(tmp_path: pathlib.Path):
     _make(tmp_path, "big.py", 100)
     result = read_lines("big.py", 1, 5)
-    assert "lines 1-5 of 100" in result
+    assert "lines=1-5 total=100" in result
     assert "line 1" in result
     assert "line 5" in result
     assert "line 6" not in result
@@ -33,7 +33,7 @@ def test_read_first_lines(tmp_path: pathlib.Path):
 def test_read_middle(tmp_path: pathlib.Path):
     _make(tmp_path, "big.py", 100)
     result = read_lines("big.py", 50, 55)
-    assert "lines 50-55 of 100" in result
+    assert "lines=50-55 total=100" in result
     assert "line 50" in result
     assert "line 55" in result
 
@@ -41,7 +41,7 @@ def test_read_middle(tmp_path: pathlib.Path):
 def test_end_clamped_to_total(tmp_path: pathlib.Path):
     _make(tmp_path, "small.py", 10)
     result = read_lines("small.py", 8, 999)
-    assert "lines 8-10 of 10" in result
+    assert "lines=8-10 total=10" in result
 
 
 def test_start_out_of_range(tmp_path: pathlib.Path):

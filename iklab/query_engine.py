@@ -14,9 +14,9 @@ from .transcript import Transcript
 class QueryEngineConfig:
     """Thresholds that govern the conversation loop."""
 
-    max_turns: int = 50_000
-    max_budget_tokens: int = 50_000 * 4
-    compact_after_turns: int = 12
+    max_turns: int = 200
+    max_budget_tokens: int = 1_000_000
+    compact_after_entries: int = 60
 
 
 @dataclass
@@ -40,7 +40,11 @@ class QueryEngine:
 
     def should_compact(self) -> bool:
         """Return True when the transcript is long enough to compact."""
-        return len(self.transcript) >= self.config.compact_after_turns
+        return len(self.transcript) >= self.config.compact_after_entries
+
+    def reset(self) -> None:
+        """Reset turn counter (used by /reset command)."""
+        self.turns = 0
 
     def record_turn(self, result: TurnResult) -> None:
         """Record a completed turn and its token usage."""

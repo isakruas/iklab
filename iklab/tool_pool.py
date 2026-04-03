@@ -19,8 +19,27 @@ class ToolPool:
     simple_mode: bool
     permission_context: ToolPermissionContext | None
 
+    def as_prompt_section(self) -> str:
+        """Render the pool as a Granite-friendly tool reference."""
+        if not self.tools:
+            return ""
+        by_cat: dict[str, list[ToolMeta]] = {}
+        for t in self.tools:
+            by_cat.setdefault(t.category, []).append(t)
+        lines: list[str] = ["<TOOLS>", "# Available Tools"]
+        for cat in ("context", "execution", "planning"):
+            if cat not in by_cat:
+                continue
+            lines.append(f"[{cat.upper()}]")
+            for t in by_cat[cat]:
+                lines.append(f"  **{t.name}** — {t.description}")
+        if self.simple_mode:
+            lines.append("[MODE] simple — only read-only tools available.")
+        lines.append("</TOOLS>")
+        return "\n".join(lines)
+
     def as_markdown(self) -> str:
-        """Render the pool as a markdown list grouped by category."""
+        """Legacy alias kept for backward compatibility with tests."""
         if not self.tools:
             return "No tools available."
         by_cat: dict[str, list[ToolMeta]] = {}

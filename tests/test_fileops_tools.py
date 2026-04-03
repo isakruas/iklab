@@ -53,7 +53,7 @@ def test_move_nonexistent(tmp_path: pathlib.Path):
 def test_delete_file(tmp_path: pathlib.Path):
     (tmp_path / "a.txt").write_text("bye")
     result = delete_path("a.txt")
-    assert "Deleted file" in result
+    assert "[Delete] OK file=" in result
     assert not (tmp_path / "a.txt").exists()
 
 
@@ -62,7 +62,7 @@ def test_delete_directory(tmp_path: pathlib.Path):
     d.mkdir()
     (d / "f.txt").write_text("x")
     result = delete_path("stuff")
-    assert "Deleted directory" in result
+    assert "[Delete] OK directory=" in result
     assert not d.exists()
 
 

@@ -85,9 +85,8 @@ async def test_fetch_json():
         mock_client.return_value.__aexit__ = AsyncMock(return_value=False)
 
         result = await web_fetch("https://api.example.com/data")
-        parsed = json.loads(result)
-        assert parsed["key"] == "value"
-        assert parsed["num"] == 42
+        assert '"key": "value"' in result
+        assert '"num": 42' in result
 
 
 @pytest.mark.anyio
@@ -100,7 +99,8 @@ async def test_fetch_plain_text():
         mock_client.return_value.__aexit__ = AsyncMock(return_value=False)
 
         result = await web_fetch("https://example.com/file.txt")
-        assert result == "plain content here"
+        assert "[WebFetch]" in result
+        assert "plain content here" in result
 
 
 @pytest.mark.anyio
@@ -112,4 +112,4 @@ async def test_fetch_error():
         mock_client.return_value.__aexit__ = AsyncMock(return_value=False)
 
         result = await web_fetch("https://unreachable.example.com")
-        assert "Fetch error" in result
+        assert "[WebFetch] Error" in result

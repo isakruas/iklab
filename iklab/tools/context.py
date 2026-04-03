@@ -14,20 +14,27 @@ def list_directory(path: str = ".") -> str:
     """List files and folders in a directory, respecting ignore rules."""
     p = sandbox.resolve(path)
     if not p.is_dir():
-        return f"Error: '{path}' is not a valid directory."
+        return f"[List] Error: '{path}' is not a valid directory."
     patterns = ignore.load_ignore_patterns(p)
-    lines = []
+    items: list[str] = []
+    dir_count = 0
+    file_count = 0
     for e in sorted(p.iterdir()):
         if ignore.is_ignored(e, p, patterns):
             continue
         if e.is_dir():
             sub = sum(1 for _ in e.iterdir())
-            lines.append(f"[DIR]  {e.name}/ ({sub} items)")
+            items.append(f"  [DIR]  {e.name}/ ({sub} items)")
+            dir_count += 1
         else:
             size = e.stat().st_size
             tag = " [binary]" if ignore.is_binary(e) else ""
-            lines.append(f"[FILE] {e.name} ({size}b){tag}")
-    return "\n".join(lines) if lines else "(empty or fully ignored)"
+            items.append(f"  [FILE] {e.name} ({size}b){tag}")
+            file_count += 1
+    if not items:
+        return f"[List] path={p.relative_to(sandbox.WORKDIR)} — empty or fully ignored"
+    header = f"[List] path={p.relative_to(sandbox.WORKDIR)} ({dir_count} dirs, {file_count} files)"
+    return header + "\n" + "\n".join(items)
 
 
 @mcp.tool(name="Read")
@@ -35,8 +42,16 @@ def read_file(path: str) -> str:
     """Read any file's content. Binary files return a descriptor."""
     p = sandbox.resolve(path)
     if not p.is_file():
-        return f"Error: '{path}' is not a valid file."
-    return ignore.safe_read(p)
+        return f"[Read] Error: '{path}' is not a valid file."
+    content = ignore.safe_read(p)
+    try:
+        size = p.stat().st_size
+        line_count = content.count("\n") + (1 if content and not content.endswith("\n") else 0)
+    except Exception:
+        size = 0
+        line_count = 0
+    header = f"[Read] path={p.relative_to(sandbox.WORKDIR)} ({size}b, {line_count} lines)"
+    return header + "\n" + content
 
 
 @mcp.tool(name="ReadLines")
@@ -65,7 +80,7 @@ def read_lines(path: str, start: int = 1, end: int = 50) -> str:
     selected = []
     for i in range(start - 1, end):
         selected.append(f"{i + 1:>{width}}\t{all_lines[i]}")
-    header = f"[{p.relative_to(sandbox.WORKDIR)} — lines {start}-{end} of {total}]"
+    header = f"[ReadLines] path={p.relative_to(sandbox.WORKDIR)} lines={start}-{end} total={total}"
     return header + "\n" + "\n".join(selected)
 
 
@@ -78,9 +93,14 @@ def glob_files(pattern: str, directory: str = ".") -> str:
         f for f in all_files if fnmatch.fnmatch(str(f.relative_to(base)), pattern) or fnmatch.fnmatch(f.name, pattern)
     ]
     if not matches:
-        return "No files found."
+        return f"[Glob] pattern={pattern!r} — no files found."
     cfg = get_config()
-    return "\n".join(str(m.relative_to(sandbox.WORKDIR)) for m in matches[: cfg.max_search_results])
+    limited = matches[: cfg.max_search_results]
+    header = f"[Glob] pattern={pattern!r} ({len(limited)} matches)"
+    lines = [f"  {m.relative_to(sandbox.WORKDIR)}" for m in limited]
+    if len(matches) > cfg.max_search_results:
+        lines.append(f"  ... {len(matches)} total matches, showing first {cfg.max_search_results}")
+    return header + "\n" + "\n".join(lines)
 
 
 @mcp.tool(name="Tree")
@@ -94,7 +114,7 @@ def tree(path: str = ".", max_depth: int = 3) -> str:
     if not base.is_dir():
         return f"Error: '{path}' is not a valid directory."
     cfg = get_config()
-    lines: list[str] = [f"{base.relative_to(sandbox.WORKDIR)}/"]
+    lines: list[str] = [f"[Tree] path={base.relative_to(sandbox.WORKDIR)}/ max_depth={max_depth}"]
     count = 0
     limit = cfg.max_walk_files
 
@@ -148,7 +168,10 @@ def grep_content(text: str, directory: str = ".", extensions: str = "") -> str:
                 results.append(f"{rel}:{i}: {line.rstrip()}")
         if len(results) >= get_config().max_search_results:
             break
-    return "\n".join(results) if results else "No results found."
+    if not results:
+        return f"[Grep] text={text!r} — no results found."
+    header = f"[Grep] text={text!r} ({len(results)} matches)"
+    return header + "\n" + "\n".join(results)
 
 
 # ---------------------------------------------------------------------------
@@ -158,37 +181,37 @@ TOOL_METADATA = [
     {
         "name": "List",
         "category": "context",
-        "description": "List files and folders in a directory, respecting ignore rules.",
+        "description": "List files and folders in a single directory. Use Tree for recursive view.",
         "source_module": "tools.context",
     },
     {
         "name": "Read",
         "category": "context",
-        "description": "Read any file's content. Binary files return a descriptor.",
+        "description": "Read an entire file. For large files, use ReadLines to read a specific range.",
         "source_module": "tools.context",
     },
     {
         "name": "ReadLines",
         "category": "context",
-        "description": "Read a specific line range from a file. Use for large files.",
+        "description": "Read lines N to M from a file (1-indexed). Use for large files or specific sections.",
         "source_module": "tools.context",
     },
     {
         "name": "Glob",
         "category": "context",
-        "description": "Find files matching a glob pattern, respecting ignore rules.",
+        "description": "Find files by name pattern (e.g. '*.py', 'src/**/*.ts'). Use Grep to search file contents.",
         "source_module": "tools.context",
     },
     {
         "name": "Tree",
         "category": "context",
-        "description": "Show recursive directory structure as an indented tree.",
+        "description": "Show full project structure as an indented tree. Use List for a single directory.",
         "source_module": "tools.context",
     },
     {
         "name": "Grep",
         "category": "context",
-        "description": "Search for text inside files, respecting ignore rules.",
+        "description": "Search for text inside files. Returns file:line:content. Use Glob to find files by name.",
         "source_module": "tools.context",
     },
 ]
